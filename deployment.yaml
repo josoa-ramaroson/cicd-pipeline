@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: item-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: item-app
+  template:
+    metadata:
+      labels: 
+        app: item-app
+    spec:
+      containers:
+        - name: items-container 
+          image: josoa/itemapi:v1
+          ports: 
+            - containerPort: 2121
