@@ -16,7 +16,7 @@ pipeline {
         stage('Build images') {
                     steps{
                         script {
-                            dockerImage = docker.build  registry + ":$BUILD_NUMBER"
+                            dockerImage = docker.build  registry + ":v1"
                         }
                         }
                 }
@@ -34,13 +34,20 @@ pipeline {
             
         stage('Cleaning up'){
             steps {
-                sh "docker rmi $registry:$BUILD_NUMBER"
+                sh "docker rmi $registry:v1"
             }
         }
         stage('Apply Kubernetes files') {
-            withKubeConfig([credentialsId: 'user1', serverUrl: 'https://api.k8s.my-company.com']) {
-                sh 'kubectl apply -f deployment'
+            steps {
+                withKubeConfig([credentialsId: 'minikube-credentials', serverUrl: 'https://192.168.49.2:8443']) {
+                    sh 'kubectl apply -f deployment '
+                    
+                    // sh "kubectl set image deployment/item-deployment items-container=${registry}:$BUILD_NUMBER"
+                }
+
             }
         }
     }
 }
+
+
